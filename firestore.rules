@@ -1,0 +1,121 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidPelanggan(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.nama is string && data.nama.size() > 0 && data.nama.size() <= 150 &&
+             data.lokasi is string && data.lokasi.size() <= 200 &&
+             data.rtRw is string && data.rtRw.size() <= 100 &&
+             data.telepon is string && data.telepon.size() <= 50 &&
+             data.kategori in ['Rumah Tangga', 'Usaha / Warung', 'Kost / Kontrakan', 'Fasilitas Umum'] &&
+             data.iuran is number && data.iuran >= 0 &&
+             data.metode in ['Tunai', 'Transfer', 'QRIS'] &&
+             data.status in ['Sudah Dibayar', 'Belum Dibayar'] &&
+             data.periodeBulan is string && data.periodeBulan.size() <= 50;
+    }
+
+    function isValidUser(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.username is string && data.username.size() > 0 && data.username.size() <= 50 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.role in ['admin_keuangan', 'admin', 'petugas', 'warga'] &&
+             data.email is string && data.email.size() <= 100;
+    }
+
+    function isValidJadwal(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.hari is string && data.hari.size() <= 50 &&
+             data.jam is string && data.jam.size() <= 50 &&
+             data.jenisSampah is string && data.jenisSampah.size() <= 100 &&
+             data.area is string && data.area.size() <= 100 &&
+             data.petugas is string && data.petugas.size() <= 100 &&
+             data.statusArmada in ['Menunggu Jadwal', 'Sedang Beroperasi', 'Selesai'];
+    }
+
+    function isValidLaporan(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.namaPelapor is string && data.namaPelapor.size() <= 100 &&
+             data.lokasi is string && data.lokasi.size() <= 200 &&
+             data.jenisKeluhan in ['Sampah Menumpuk', 'Belum Diangkut', 'Kerusakan Tempat Sampah', 'Lainnya'] &&
+             data.deskripsi is string && data.deskripsi.size() <= 1000 &&
+             data.tanggal is string && data.tanggal.size() <= 50 &&
+             data.status in ['Menunggu', 'Diproses', 'Selesai'];
+    }
+
+    function isValidNotifikasi(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.title is string && data.title.size() <= 150 &&
+             data.message is string && data.message.size() <= 500 &&
+             data.time is string && data.time.size() <= 50 &&
+             data.read is bool &&
+             data.type in ['info', 'success', 'warning'];
+    }
+
+    function isValidLog(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.banjar is string && data.banjar.size() <= 100 &&
+             data.namaPengurus is string && data.namaPengurus.size() <= 100 &&
+             data.jenisAktivitas is string && data.jenisAktivitas.size() <= 100 &&
+             data.rincian is string && data.rincian.size() <= 500 &&
+             data.waktu is string && data.waktu.size() <= 50 &&
+             data.statusVerifikasi is string && data.statusVerifikasi.size() <= 50;
+    }
+
+    // Health & connection testing
+    match /test/{docId} {
+      allow read, write: if true;
+    }
+
+    // Pelanggan (Warga) collection
+    match /pelanggan/{pelangganId} {
+      allow read: if true;
+      allow create, update: if isValidId(pelangganId) && isValidPelanggan(request.resource.data);
+      allow delete: if isValidId(pelangganId);
+    }
+
+    // Users / Akun Pengurus & Petugas collection
+    match /users/{userId} {
+      allow read: if true;
+      allow create, update: if isValidId(userId) && isValidUser(request.resource.data);
+      allow delete: if isValidId(userId);
+    }
+
+    // Jadwal Pengangkutan Sampah collection
+    match /jadwal/{jadwalId} {
+      allow read: if true;
+      allow create, update: if isValidId(jadwalId) && isValidJadwal(request.resource.data);
+      allow delete: if isValidId(jadwalId);
+    }
+
+    // Laporan Keluhan Warga collection
+    match /laporan/{laporanId} {
+      allow read: if true;
+      allow create, update: if isValidId(laporanId) && isValidLaporan(request.resource.data);
+      allow delete: if isValidId(laporanId);
+    }
+
+    // Notifikasi Sistem collection
+    match /notifikasi/{notifId} {
+      allow read: if true;
+      allow create, update: if isValidId(notifId) && isValidNotifikasi(request.resource.data);
+      allow delete: if isValidId(notifId);
+    }
+
+    // Log Aktivitas Banjar collection
+    match /logsBanjar/{logId} {
+      allow read: if true;
+      allow create, update: if isValidId(logId) && isValidLog(request.resource.data);
+      allow delete: if isValidId(logId);
+    }
+
+    // Catch-all Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

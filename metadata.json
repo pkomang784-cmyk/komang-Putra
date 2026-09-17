@@ -1,0 +1,6 @@
+{
+  "name": "SI_UPS - Sistem Pengelolaan Iuran Sampah",
+  "description": "Aplikasi web pengelolaan data warga, iuran sampah, status pembayaran tunai/transfer, jadwal pengangkutan, kuitansi digital, dan ekspor laporan.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

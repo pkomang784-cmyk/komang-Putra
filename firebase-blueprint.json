@@ -1,0 +1,134 @@
+{
+  "entities": {
+    "Pelanggan": {
+      "title": "Pelanggan",
+      "description": "Data warga / pelanggan iuran sampah",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "nama": { "type": "string", "maxLength": 150 },
+        "lokasi": { "type": "string", "maxLength": 200 },
+        "rtRw": { "type": "string", "maxLength": 100 },
+        "adminPenginput": { "type": "string", "maxLength": 100 },
+        "telepon": { "type": "string", "maxLength": 50 },
+        "kategori": { "type": "string", "enum": ["Rumah Tangga", "Usaha / Warung", "Kost / Kontrakan", "Fasilitas Umum"] },
+        "iuran": { "type": "number" },
+        "metode": { "type": "string", "enum": ["Tunai", "Transfer", "QRIS"] },
+        "status": { "type": "string", "enum": ["Sudah Dibayar", "Belum Dibayar"] },
+        "tanggalBayar": { "type": "string", "maxLength": 50 },
+        "noResi": { "type": "string", "maxLength": 50 },
+        "catatan": { "type": "string", "maxLength": 500 },
+        "periodeBulan": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "nama", "lokasi", "rtRw", "telepon", "kategori", "iuran", "metode", "status", "periodeBulan"]
+    },
+    "AppUser": {
+      "title": "AppUser",
+      "description": "Data akun pengguna sistem (Admin / Petugas)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "username": { "type": "string", "maxLength": 50 },
+        "name": { "type": "string", "maxLength": 100 },
+        "role": { "type": "string", "enum": ["admin_keuangan", "admin", "petugas", "warga"] },
+        "roleTitle": { "type": "string", "maxLength": 50 },
+        "email": { "type": "string", "maxLength": 100 },
+        "avatar": { "type": "string", "maxLength": 20 },
+        "phone": { "type": "string", "maxLength": 50 },
+        "rtRw": { "type": "string", "maxLength": 100 },
+        "password": { "type": "string", "maxLength": 100 }
+      },
+      "required": ["id", "username", "name", "role", "email"]
+    },
+    "JadwalPengangkutan": {
+      "title": "JadwalPengangkutan",
+      "description": "Jadwal operasional pengangkutan sampah",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "hari": { "type": "string", "maxLength": 50 },
+        "jam": { "type": "string", "maxLength": 50 },
+        "jenisSampah": { "type": "string", "maxLength": 100 },
+        "area": { "type": "string", "maxLength": 100 },
+        "petugas": { "type": "string", "maxLength": 100 },
+        "kontakPetugas": { "type": "string", "maxLength": 50 },
+        "platNomor": { "type": "string", "maxLength": 30 },
+        "statusArmada": { "type": "string", "enum": ["Menunggu Jadwal", "Sedang Beroperasi", "Selesai"] }
+      },
+      "required": ["id", "hari", "jam", "jenisSampah", "area", "petugas", "statusArmada"]
+    },
+    "LaporanSampah": {
+      "title": "LaporanSampah",
+      "description": "Laporan pengaduan sampah warga",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "namaPelapor": { "type": "string", "maxLength": 100 },
+        "telepon": { "type": "string", "maxLength": 50 },
+        "lokasi": { "type": "string", "maxLength": 200 },
+        "jenisKeluhan": { "type": "string", "enum": ["Sampah Menumpuk", "Belum Diangkut", "Kerusakan Tempat Sampah", "Lainnya"] },
+        "deskripsi": { "type": "string", "maxLength": 1000 },
+        "tanggal": { "type": "string", "maxLength": 50 },
+        "status": { "type": "string", "enum": ["Menunggu", "Diproses", "Selesai"] },
+        "fotoPlaceholder": { "type": "string", "maxLength": 500 }
+      },
+      "required": ["id", "namaPelapor", "lokasi", "jenisKeluhan", "deskripsi", "tanggal", "status"]
+    },
+    "AppNotification": {
+      "title": "AppNotification",
+      "description": "Notifikasi aktivitas dan tagihan sistem",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 150 },
+        "message": { "type": "string", "maxLength": 500 },
+        "time": { "type": "string", "maxLength": 50 },
+        "read": { "type": "boolean" },
+        "type": { "type": "string", "enum": ["info", "success", "warning"] }
+      },
+      "required": ["id", "title", "message", "time", "read", "type"]
+    },
+    "LogUpdateBanjar": {
+      "title": "LogUpdateBanjar",
+      "description": "Log riwayat pembaruan dan transaksi banjar",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "banjar": { "type": "string", "maxLength": 100 },
+        "namaPengurus": { "type": "string", "maxLength": 100 },
+        "jenisAktivitas": { "type": "string", "maxLength": 100 },
+        "rincian": { "type": "string", "maxLength": 500 },
+        "nominal": { "type": "number" },
+        "waktu": { "type": "string", "maxLength": 50 },
+        "statusVerifikasi": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "banjar", "namaPengurus", "jenisAktivitas", "rincian", "waktu", "statusVerifikasi"]
+    }
+  },
+  "firestore": {
+    "/pelanggan/{pelangganId}": {
+      "schema": "Pelanggan",
+      "description": "Koleksi data pelanggan/warga pembayar iuran sampah"
+    },
+    "/users/{userId}": {
+      "schema": "AppUser",
+      "description": "Koleksi data akun admin dan petugas pengelola sistem"
+    },
+    "/jadwal/{jadwalId}": {
+      "schema": "JadwalPengangkutan",
+      "description": "Koleksi jadwal armada dan petugas pengangkut sampah"
+    },
+    "/laporan/{laporanId}": {
+      "schema": "LaporanSampah",
+      "description": "Koleksi laporan pengaduan sampah dari warga"
+    },
+    "/notifikasi/{notifId}": {
+      "schema": "AppNotification",
+      "description": "Koleksi notifikasi dan riwayat pengingat iuran"
+    },
+    "/logsBanjar/{logId}": {
+      "schema": "LogUpdateBanjar",
+      "description": "Koleksi log aktivitas banjar dan verifikasi setoran"
+    }
+  }
+}
